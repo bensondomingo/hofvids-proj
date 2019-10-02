@@ -1,0 +1,19 @@
+{% extends "halls/base.html" %}
+
+{% block title %}Hall | {{object.title}}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3 class="display-3">{{ object.title }}</h3>
+    <h5 class="display-5 text-muted">{{ object.user.username }}</h5>
+
+    <ul>
+        {% for video in object.video_set.all %}
+            <li>{{ video.title }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'updatehall' object.pk %}" class="btn btn-primary">Update</a>
+    <a href="{% url 'deletehall' object.pk %}" class="btn btn-danger">Delete</a>
+</div>
+{% endblock %}

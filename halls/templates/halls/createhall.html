@@ -9,18 +9,11 @@
     <div class="row mt-5">
 
         <div class="col-sm-12 col-md-6 shadow-lg rounded p-3 mx-auto">
-            <h3 class="dispaly-3 text-center">Login</h3>
+            <h3 class="dispaly-3 text-center">Create New Hall of Fame</h3>
             <form action="" method="post">
                 {% csrf_token %}
-
-                {% if form.errors %}
-                <div class="alert alert-danger" role="alert">Your username and password didn't match. Please try again.
-                </div>
-                {% endif %}
-
                 {% include "halls/form.html" %}
-
-                <button type="submit" class="btn btn-primary btn-block mt-4 mb-3">Login</button>
+                <button type="submit" class="btn btn-primary btn-block mt-4 mb-3">Create</button>
             </form>
         </div>
     </div>

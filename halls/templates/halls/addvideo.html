@@ -1,6 +1,6 @@
 {% extends "halls/base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Add Video{% endblock %}
 
 {% block content %}
 
@@ -12,11 +12,6 @@
             <h3 class="dispaly-3 text-center">Login</h3>
             <form action="" method="post">
                 {% csrf_token %}
-
-                {% if form.errors %}
-                <div class="alert alert-danger" role="alert">Your username and password didn't match. Please try again.
-                </div>
-                {% endif %}
 
                 {% include "halls/form.html" %}
 

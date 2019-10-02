@@ -23,12 +23,21 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
     # AUTH
     path('signup/', views.SignUp.as_view(), name='signup'),
-    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('login/', views.Login.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     # Halls
-    path('halloffame/create/', views.create_hall, name='create_hall'),
+    # path('halloffame/create/', views.create_hall, name='create_hall'),
+    path('halloffame/create/', views.CreateHall.as_view(), name='createhall'),
+    path('hof/create/', views.create_hall, name='create_hall'),
+    path('halloffame/<int:pk>/', views.DetailHall.as_view(), name='detailhall'),
+    path('halloffame/<int:pk>/update/', views.UpdateHall.as_view(), name='updatehall'),
+    path('halloffame/<int:pk>/delete/', views.DeleteHall.as_view(), name='deletehall'),
+    # Videos
+    # path('halloffame/<int:pk>/addvideo/', views.add_video, name='addvideo'),
+    path('halloffame/<int:pk>/addvideo/', views.AddVideo.as_view(), name='addvideo'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
