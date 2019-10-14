@@ -1,26 +1,78 @@
 {% extends "halls/base.html" %}
 
-{% block title %}Add Video{% endblock %}
+{% block title %}{{ hall.title }} | Add Video{% endblock %}
+
+{% load static %}
 
 {% block content %}
 
 <div class="container">
 
-    <div class="row mt-5">
+    <div class="row">
 
         <div class="col-sm-12 col-md-6 shadow-lg rounded p-3 mx-auto">
-            <h3 class="dispaly-3 text-center">Login</h3>
-            <form action="" method="post">
+            <h3 class="dispaly-3 text-center">Add video to {{ hall.title }}</h3>
+            <form id="addVideo" action="" method="post">
                 {% csrf_token %}
+                <div class="form-group fieldWrapper">
+                    <label class="lead" for="{{ form.url.id_for_label }}">{{ form.url.label }}:</label>
+                    {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.url.errors }}
+                    </div>
+                    {% endif %}
+                    <div id="urlErrorAlert"></div>
+                    <input class="form-control" type="text" name="{{ form.url.name }}" id="{{ form.url.id_for_label }}"
+                        title="{{ form.url.help_text }}" value="" placeholder="Paste url here" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="addButton">Add</button>
+            </form>
 
-                {% include "halls/form.html" %}
+            <hr class="my-4">
 
-                <button type="submit" class="btn btn-primary btn-block mt-4 mb-3">Login</button>
+            <form action="" method="post">
+                <h3 class="dispaly-3 text-center">Or search for video</h3>
+                {% csrf_token %}
+                <div class="form-group fieldWrapper">
+                    <label class="lead" for="{{ form.search_term.id_for_label }}">{{ form.search_term.label }}:</label>
+                    <input class="form-control" type="text" name="{{ form.search_term.name }}"
+                        id="{{ form.search_term.id_for_label }}" title="{{ form.search_term.help_text }}" value=""
+                        placeholder="Type search term" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-4 mb-3" hidden>Search</button>
             </form>
         </div>
     </div>
 
+    <div class="mx-auto mt-3" id="loader"></div>
+
+    <div class="row justify-content-center m-3" id="search_results"></div>
+
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="nextModal" tabindex="-1" role="dialog" aria-labelledby="nextModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nextModalLabel">Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Successfully added video to {{ hall.title }}.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addAnotherVideo">Add Another</button>
+                <a href="{% url 'detailhall' hall.pk %}" class="btn btn-success" id="doneAddVideo">Done</a>
+                <!-- <button type="button" class="btn btn-primary">Done</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'halls/script/search_video.js' %}"></script>
 
 {% endblock %}

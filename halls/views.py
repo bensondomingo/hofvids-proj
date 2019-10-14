@@ -6,8 +6,14 @@ from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login
+from django.http import Http404, JsonResponse
 from .models import Hall, Video
-from .forms import HallForm, VideoForm
+from .forms import HallForm, AddVideoForm, SearchForm
+from .mixins import AddVideoMixin
+from urllib.parse import urlparse
+import requests
+
+YOUTUBE_API_KEY = 'AIzaSyDd_yJ-TyaWGzGNN0DyAC3rZPy9izKkjmQ'
 
 
 def home(request):
@@ -18,42 +24,37 @@ def dashboard(request):
     return render(request, 'halls/dashboard.html')
 
 
-def add_video(request, pk):
-    if request.method == 'GET':
-        form = VideoForm()
-        return render(request, 'halls/addvideo.html', {'form': form})
-
-    # fields = ['title', 'url', 'youtube_id']
-    form = VideoForm(request.POST)
-    if form.is_valid():
-        video = Video()
-        video.title = form.cleaned_data['title']
-        video.url = form.cleaned_data['url']
-        video.youtube_id = form.cleaned_data['youtube_id']
-        video.hall = Hall.objects.get(pk=pk)
-        video.save()
-        return redirect(reverse_lazy('detailhall', kwargs={'pk': pk}))
+def video_search(request):
+    search_term = request.GET['search_term']
+    return JsonResponse({'search_term': search_term})
 
 
-class AddVideo(generic.CreateView):
-    form_class = VideoForm
-    initial = {
-        'title': '',
-        'url': '',
-        'youtube_id': '',
-    }
+class AddVideo(AddVideoMixin, generic.FormView):
+    form_class = AddVideoForm
     template_name = 'halls/addvideo.html'
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            video = Video()
-            video.title = form.cleaned_data['title']
-            video.url = form.cleaned_data['url']
-            video.youtube_id = form.cleaned_data['youtube_id']
-            video.hall = Hall.objects.get(pk=kwargs.get('pk'))
-            video.save()
-            return redirect(reverse_lazy('detailhall', kwargs=kwargs))
+    def get(self, request, *args, **kwargs):
+        hall = Hall.objects.get(pk=self.kwargs.get('pk'))
+        if self.request.user.username != hall.user.username:
+            raise Http404()
+        return super().get(request, *args, **kwargs)
+
+    # def form_valid(self, form):
+    #     video = Video()
+    #     video.title = form.cleaned_data['title']
+    #     video.url = form.cleaned_data['url']
+    #     video.youtube_id = form.cleaned_data['youtube_id']
+    #     video.hall = Hall.objects.get(pk=self.kwargs.get('pk'))
+    #     video.save()
+
+    #     self.success_url = reverse_lazy('detailhall', kwargs=self.kwargs)
+
+    #     return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['hall'] = Hall.objects.get(**self.kwargs)
+        return context
 
 
 @method_decorator(login_required, name='dispatch')
