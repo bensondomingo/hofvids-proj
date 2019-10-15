@@ -39,22 +39,15 @@ class AddVideo(AddVideoMixin, generic.FormView):
             raise Http404()
         return super().get(request, *args, **kwargs)
 
-    # def form_valid(self, form):
-    #     video = Video()
-    #     video.title = form.cleaned_data['title']
-    #     video.url = form.cleaned_data['url']
-    #     video.youtube_id = form.cleaned_data['youtube_id']
-    #     video.hall = Hall.objects.get(pk=self.kwargs.get('pk'))
-    #     video.save()
-
-    #     self.success_url = reverse_lazy('detailhall', kwargs=self.kwargs)
-
-    #     return super().form_valid(form)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['hall'] = Hall.objects.get(**self.kwargs)
         return context
+
+
+class DeleteVideo(generic.DeleteView):
+    model = Video
+    template_name = 'halls/deletevideo.html'
 
 
 @method_decorator(login_required, name='dispatch')
